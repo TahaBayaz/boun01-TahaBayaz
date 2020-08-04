@@ -1,0 +1,13 @@
+---
+title: "RMarkdown Homework"
+author: "Taha BAYAZ"
+date: "04 08 2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+I am a graduate student in Bogazici University. I want to learn how to make a data analysis and I want to be a data scientist in the future.
+
