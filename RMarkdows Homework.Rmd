@@ -11,3 +11,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 I am a graduate student in Bogazici University. I want to learn how to make a data analysis and I want to be a data scientist in the future.
 
+**Market Basket Analysis using R**
+
+For a market, every transaction is a data. There can be similarities among people and products. We can search for it with some algorithms. You can see an example code for Apriori algorithm which is an Association Rule Mining algorithm
+
+[APRIORI Algorithm](https://www.datacamp.com/community/tutorials/market-basket-analysis-r)
