@@ -9,7 +9,15 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-I am a graduate student in Bogazici University. I want to learn how to make a data analysis and I want to be a data scientist in the future.
+**Who is Taha BAYAZ?**
+
+I graduated from Bogazici University and now I am a graduate student in Industrial Engineering in Bogazici University. I want to learn how to make a data analysis and I want to be a data scientist in the future. You can find my LinkedIn Profile [here](https://www.linkedin.com/in/tahabayaz/)
+
+**useR!2020: missMethods**
+
+In this video, Tobias Rockel who is the creator of the package missMethods, talks about the package itself. Mainly, this package has three capabilities, which are creating the missing data, handling the mising data and evaluating the handling steps. The aim of the package is to maintain the reproducability. You can watch the video from the link below.
+
+[YouTube Link](https://www.youtube.com/watch?v=G6JCXaPjG9g)
 
 **Market Basket Analysis using R**
 
