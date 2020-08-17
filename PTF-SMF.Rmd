@@ -1,0 +1,143 @@
+---
+title: "Electricity Market"
+author: "Taha BAYAZ"
+output: 
+  html_document:
+    css: style.css
+    toc: true
+    toc_depth: 3
+    toc_float:
+      collapsed: true
+      smooth_scroll: false
+date: "`r format(Sys.time(), '%d %B %Y')`"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, fig.align = 'center', fig.width = 8, fig.height = 8)
+
+```
+
+```{r library, echo = FALSE}
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+library(tidyr)
+
+```
+
+# AIM
+
+In this report, we will analyze the data of the electricity prices. We used the data from EPIAS. You can download the data from [here](https://rapor.epias.com.tr/rapor/xhtml/ptfSmfListeleme.xhtml). In this analysis, we used the data from 01 - 31.07.2020 electricity prices. You can get more information from [here](https://boun-ie48a.github.io/files/electricity_markets_mini_tutorial)
+
+# PREPARATION
+
+## Importing the Data
+
+After downloading the data, we will import the data to an object called `data`. After importing the data we can observe the data with glimpse function.
+
+```{r data}
+data = read.csv("ptf-smf.csv")
+data %>% glimpse()
+```
+
+## Preprocessing
+
+When we look at the data, the type of the date field is string. So, we need to change the type of that column. Also, we can change the name of the field (translating Turkish to English).
+
+```{r preprocessing}
+data$PTF = as.numeric(gsub(",", ".", gsub("\\.", "", data$PTF)))
+data$SMF = as.numeric(gsub(",", ".", gsub("\\.", "", data$SMF)))
+data$Negatif.Dengesizlik.Fiyatı..TL.MWh. = as.numeric(gsub(",", ".", gsub("\\.", "", data$Negatif.Dengesizlik.Fiyatı..TL.MWh.)))
+data$Pozitif.Dengesizlik.Fiyatı..TL.MWh. = as.numeric(gsub(",", ".", gsub("\\.", "", data$Pozitif.Dengesizlik.Fiyatı..TL.MWh.)))
+data$Tarih = gsub(pattern = "\\.","-",data$Tarih)
+
+data_last = data %>%
+  select(Date = Tarih, MCP = PTF, SMP = SMF, NIP = Negatif.Dengesizlik.Fiyatı..TL.MWh., PIP = Pozitif.Dengesizlik.Fiyatı..TL.MWh., SMPDirection = SMF.Yön) %>%
+  mutate(DateTime = as.POSIXct(factor(Date), format = "%d-%m-%y %H:%M")) %>%
+  mutate(Day = wday(DateTime, week_start = 1), Hour = hour(DateTime), Date = as.Date(Date, format = "%d-%m-%y %H:%M"))
+
+data_last %>% glimpse()
+```
+
+At the end of this process, we have 9 columns that also contain the date information.
+
+# ANALYSIS
+
+Our data has date information. So, we can group the data and get aggregated information about the electricity prices. We can list these ideas like below:
+
+- Average MCP over days / hours
+- Max MCP over days
+- Average SMP over days / hours
+- MAX SMP over days
+
+## MCP
+
+We can create a variable for getting the information and creating the plot of the daily averages of MCP.
+
+```{r MCP_Daily_glimpse}
+MCP_Daily = data_last %>% 
+  group_by(Day) %>%
+  summarize(Avg = mean(MCP))
+
+MCP_Daily %>% glimpse()
+```
+
+```{r MCP_Daily_plot}
+ggplot(MCP_Daily, aes(Day, Avg)) + 
+  geom_col() +
+  expand_limits(y = 0)
+```
+
+We can easily understand from the plot that daily averages of MCP is decreasing on the weekend. In other days, their values are very close.
+We can do these steps for hour, too.
+
+```{r MCP_Hourly_glimpse}
+MCP_Hourly = data_last %>% 
+  group_by(Hour) %>%
+  summarize(Avg = mean(MCP))
+
+MCP_Hourly %>% glimpse()
+```
+
+```{r MCP_Hourly_plot}
+ggplot(MCP_Hourly, aes(Hour, Avg)) + 
+  geom_line() +
+  expand_limits(y = 0)
+```
+Around 06:00, the average MCP has very low values respect to other hours. At other hours, they are nearly equal.
+
+## SMP
+
+We can create a variable for getting the information and creating the plot of the daily averages of SMP.
+
+```{r SMP_Daily_glimpse}
+SMP_Daily = data_last %>% 
+  group_by(Day) %>%
+  summarize(Avg = mean(SMP))
+
+SMP_Daily %>% glimpse()
+```
+
+```{r SMP_Daily_plot}
+ggplot(SMP_Daily, aes(Day, Avg)) + 
+  geom_col() +
+  expand_limits(y = 0)
+```
+
+We can easily understand from the plot that daily averages of SMP on Monday and Tuesday are higher than the other days. On wednesdays, it has the lowest average SMP values.
+We can do these steps for hour, too.
+
+```{r SMP_Hourly_glimpse}
+SMP_Hourly = data_last %>% 
+  group_by(Hour) %>%
+  summarize(Avg = mean(SMP))
+
+SMP_Hourly %>% glimpse()
+```
+
+```{r SMP_Hourly_plot}
+ggplot(SMP_Hourly, aes(Hour, Avg)) + 
+  geom_line() +
+  expand_limits(y = 0)
+```
+Around 06:00, the average SMP has very low values respect to other hours, too. At other hours, they are nearly equal.
