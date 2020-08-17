@@ -66,15 +66,15 @@ At the end of this process, we have 9 columns that also contain the date informa
 Our data has date information. So, we can group the data and get aggregated information about the electricity prices. We can list these ideas like below:
 
 - Average MCP over days / hours
-- Max MCP over days
+- Max MCP over hours
 - Average SMP over days / hours
-- MAX SMP over days
+- MAX SMP over hours
 
 ## MCP
 
 We can create a variable for getting the information and creating the plot of the daily averages of MCP.
 
-```{r MCP_Daily_glimpse}
+```{r MCP_Avg_Daily_glimpse}
 MCP_Daily = data_last %>% 
   group_by(Day) %>%
   summarize(Avg = mean(MCP))
@@ -82,7 +82,7 @@ MCP_Daily = data_last %>%
 MCP_Daily %>% glimpse()
 ```
 
-```{r MCP_Daily_plot}
+```{r MCP_Avg_Daily_plot}
 ggplot(MCP_Daily, aes(Day, Avg)) + 
   geom_col() +
   expand_limits(y = 0)
@@ -91,7 +91,7 @@ ggplot(MCP_Daily, aes(Day, Avg)) +
 We can easily understand from the plot that daily averages of MCP is decreasing on the weekend. In other days, their values are very close.
 We can do these steps for hour, too.
 
-```{r MCP_Hourly_glimpse}
+```{r MCP_Avg_Hourly_glimpse}
 MCP_Hourly = data_last %>% 
   group_by(Hour) %>%
   summarize(Avg = mean(MCP))
@@ -99,18 +99,33 @@ MCP_Hourly = data_last %>%
 MCP_Hourly %>% glimpse()
 ```
 
-```{r MCP_Hourly_plot}
+```{r MCP_Avg_Hourly_plot}
 ggplot(MCP_Hourly, aes(Hour, Avg)) + 
   geom_line() +
   expand_limits(y = 0)
 ```
+
 Around 06:00, the average MCP has very low values respect to other hours. At other hours, they are nearly equal.
+
+```{r MCP_Max_Hourly_glimpse}
+options(tibble.print_max = 24)
+
+data_last %>% 
+  group_by(Hour) %>%
+  top_n(1, MCP) %>%
+  select(Hour, MCP) %>%
+  arrange(desc(MCP))
+
+options(tibble.print_max = 10)
+```
+
+We can see that the highest three MCP values have occurred at 14.00, 15.00 and 16.00 in July,2020.
 
 ## SMP
 
 We can create a variable for getting the information and creating the plot of the daily averages of SMP.
 
-```{r SMP_Daily_glimpse}
+```{r SMP_Avg_Daily_glimpse}
 SMP_Daily = data_last %>% 
   group_by(Day) %>%
   summarize(Avg = mean(SMP))
@@ -118,16 +133,16 @@ SMP_Daily = data_last %>%
 SMP_Daily %>% glimpse()
 ```
 
-```{r SMP_Daily_plot}
+```{r SMP_Avg_Daily_plot}
 ggplot(SMP_Daily, aes(Day, Avg)) + 
   geom_col() +
   expand_limits(y = 0)
 ```
 
-We can easily understand from the plot that daily averages of SMP on Monday and Tuesday are higher than the other days. On wednesdays, it has the lowest average SMP values.
+We can easily understand from the plot that daily averages of SMP on Monday and Tuesday are higher than the other days. On wednesday, it has the lowest average SMP values.
 We can do these steps for hour, too.
 
-```{r SMP_Hourly_glimpse}
+```{r SMP_Avg_Hourly_glimpse}
 SMP_Hourly = data_last %>% 
   group_by(Hour) %>%
   summarize(Avg = mean(SMP))
@@ -135,9 +150,24 @@ SMP_Hourly = data_last %>%
 SMP_Hourly %>% glimpse()
 ```
 
-```{r SMP_Hourly_plot}
+```{r SMP_Avg_Hourly_plot}
 ggplot(SMP_Hourly, aes(Hour, Avg)) + 
   geom_line() +
   expand_limits(y = 0)
 ```
+
 Around 06:00, the average SMP has very low values respect to other hours, too. At other hours, they are nearly equal.
+
+```{r SMP_Max_Hourly_glimpse}
+options(tibble.print_max = 24)
+
+data_last %>% 
+  group_by(Hour) %>%
+  top_n(1, SMP) %>%
+  select(Hour, SMP) %>%
+  arrange(desc(SMP))
+
+options(tibble.print_max = 10)
+```
+
+We can see that the highest three SMP values have occurred at 14.00, 15.00 and 16.00 in July,2020.
