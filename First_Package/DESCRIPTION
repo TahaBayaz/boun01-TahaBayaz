@@ -1,10 +1,10 @@
-Package: First Package
+Package: First_Package
 Title: This package used for to take the square root of the number
 Version: 0.0.0.1
 Authors@R: 
     person(given = "Taha",
            family = "BAYAZ",
-           email = "taha.bayaz@boun.edu.tr"
+           email = "taha.bayaz@boun.edu.tr")
 Description: This package has a function called square_root and return the square root of the input.
 License: MIT
 Encoding: UTF-8
