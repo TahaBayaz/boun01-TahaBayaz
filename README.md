@@ -2,4 +2,4 @@
 
 You can visit my GitHub Page at : https://pjournal.github.io/boun01-TahaBayaz/
 
-TahaBayaz created by GitHub Classroom
+Also, you can visit our group's page : https://pjournal.github.io/boun01g-data-mine-r-s/
