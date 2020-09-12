@@ -8,4 +8,4 @@
 
 ## Assignment 3
 
-[Electricity Market](https://pjournal.github.io/boun01-TahaBayaz/Assignment3.html)
+[Diamonds](https://pjournal.github.io/boun01-TahaBayaz/Assignment3.html)
