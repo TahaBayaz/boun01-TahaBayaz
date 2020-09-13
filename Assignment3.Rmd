@@ -847,14 +847,42 @@ summary(model_glm4)
 ```
 
 PCA helps us to use less feature in a model. But, as expected, with fewer feature we will get more AIC value in the model. We have `r sum(sapply(diamonds_train, class) == "numeric")` numeric feature. So, we don't need to decrease the feature number.
-For the best glm model, we can calculate the R^2 value for understanding the performance. It can be calculate easily with `1 - (Residual deviance / Null deviance)` according to this [link](https://stats.stackexchange.com/questions/46345/how-to-calculate-goodness-of-fit-in-glm-r).
+
+To be able to compare glm model with other models, we need to predict for test data and calculate the R squared value.
 
 ```{r}
-model_glm2_r2 = 1 - (5343.6 / 42126.8)
+model_glm2_prediction<-predict(model_glm2,newdata=diamonds_test)
+
+model_glm2_r2 <- 1 - (sum((model_glm2_prediction-diamonds_test$price)^2)/sum((diamonds_test$price-mean(diamonds_train$price))^2))
 model_glm2_r2
 ```
 
-We got `r model_glm2_r2` R^2 value for this model. We can use it when comparing with other models.
+The result is negative. It means that we have a very bad model. So, we can change the family/link function of the glm to get a better model. The second best model have Gamma family with identity link function. So we need to create the same model with this family and link function.
+
+```{r}
+model_glm5 = glm(price ~ . - pca1 - pca2 - pca3 - pca4 - table, data = diamonds_train, family = Gamma(link = "identity"), start = c(0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5))
+
+model_glm5_prediction<-predict(model_glm5,newdata=diamonds_test)
+
+model_glm5_r2 <- 1 - (sum((model_glm5_prediction-diamonds_test$price)^2)/sum((diamonds_test$price-mean(diamonds_train$price))^2))
+model_glm5_r2
+```
+
+This is a far more better model. Also we can plot the real values vs predictions.
+
+```{r}
+pred_vs_real_glm = as.data.frame(cbind(model_glm5_prediction, diamonds_test$price))
+colnames(pred_vs_real_glm) = c("predictions", "real")
+
+pred_vs_real_glm %>%
+  ggplot(aes(predictions, real)) +
+  geom_point()  +
+  geom_abline(intercept = 0, slope = 1, color="red", size=1.5) +
+  labs(title = "Prediction vs Real Values For Best GLM Model",
+       subtitle = st,
+       x = "Predictions",
+       y = "Real Values")
+```
 
 ## CART
 
@@ -885,7 +913,7 @@ model_rpart2 <- rpart(price~. - pca1 - pca2 - pca3 - pca4, data=diamonds_train, 
 prp(model_rpart2)
 ```
 
-This is a more detailed tree. From the plot of this tree, we can say that we will define the price with respect to `carat`, `y`, `clarity` and `color` values. To be able to compare these two trees, we need to calculate the R^2 values.
+This is a more detailed tree. From the plot of this tree, we can say that we will define the price with respect to `carat`, `y`, `clarity` and `color` values. To be able to compare these two trees, we need to calculate the R squared values. To do so, firstly we need to calculate the predictions for test data and then calculate the R squared values.
 
 ```{r}
 model_rpart_prediction<-predict(model_rpart,newdata=diamonds_test)
@@ -897,13 +925,15 @@ model_rpart2_prediction<-predict(model_rpart2,newdata=diamonds_test)
 
 model_rpart2_r2 <- 1 - (sum((model_rpart2_prediction-diamonds_test$price)^2)/sum((diamonds_test$price-mean(diamonds_train$price))^2))
 model_rpart2_r2
+
 ```
 
 As we can from the results, we can see that second model is better than the first model.
-If we want to compare the best tree model with best glm model, we need to compare the R^2 values for these models.
+
+If we want to compare the best tree model with best glm model, we need to compare the R squared values for these models.
 
 ```{r}
-model_rpart2_r2 > model_glm2_r2
+model_rpart2_r2 > model_glm5_r2
 ```
 
 So, our CART model is better than the glm model.
